@@ -20,4 +20,14 @@ The purpose of STIGs is to reduce vulnerabilities, enforce compliance, and stand
 
 **Summary:**  
 STIGs are official, prescriptive security baselines for configuring and maintaining secure systems.
+----
+<img width="1806" height="742" alt="image" src="https://github.com/user-attachments/assets/0676783c-3ff4-41ca-9c23-dc4545daaa82" />
 
+Unremiadiated STIG
+----
+
+WN10-SO-000120 - STIG Number - STIG path - \SYSTEM\CurrentControlSet\Services\LanManServer\Parameters\
+
+
+Remiadiated STIG
+----
