@@ -22,52 +22,42 @@ The purpose of STIGs is to reduce vulnerabilities, enforce compliance, and stand
 STIGs are official, prescriptive security baselines for configuring and maintaining secure systems.
 ----
 
-<img width="1354" height="370" alt="image" src="https://github.com/user-attachments/assets/98acd144-1112-47b5-b472-4ffb0a09002b" />
+<img width="1334" height="406" alt="image" src="https://github.com/user-attachments/assets/5d70ddf4-984a-4200-aa5e-87f55d8fffdc" />
 
 Unremiadiated STIG
 ----
 
-WN10-SO-000120 - STIG Number - STIG path - \SYSTEM\CurrentControlSet\Services\LanManServer\Parameters\
+WN10-CC-000185 - STIG ID - STIG path - \SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\
 
 <img width="1363" height="397" alt="image" src="https://github.com/user-attachments/assets/805a7f3d-92ee-4d70-a5b7-09434c497f8b" />
 
 Remiadiated STIG
 ----
-Remiadiated PsISE script for WN10-SO-000120
+Remiadiated PsISE script for WN10-CC-000185 - The default autorun behavior must be configured to prevent autorun commands.
 ----
 
-````markdown
 ```powershell
-# WN10-SO-000120 Remediation
-# Disable anonymous SID/Name translation
-# Windows 10 Enterprise
 
-$RegPath   = "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa"
-$ValueName = "RestrictAnonymous"
-$ValueData = 1
-$ValueType = "DWord"
+# Ensure script runs as administrator
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)) {
+    Write-Error "Run this script as Administrator."
+    exit
+}
 
-# Ensure registry path exists
+# Registry path
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+$RegName = "NoDriveTypeAutoRun"
+$RegValue = 0xFF  # Disable AutoRun on all drives
+
+# Create key if it doesn't exist
 if (-not (Test-Path $RegPath)) {
-    New-Item -Path $RegPath -Force | Out-Null
+    New-Item -Path $RegPath -Force
 }
 
-# Retrieve current value
-$currentValue = Get-ItemProperty -Path $RegPath -Name $ValueName -ErrorAction SilentlyContinue
+# Set the registry value
+Set-ItemProperty -Path $RegPath -Name $RegName -Value $RegValue -Type DWord
 
-# Apply remediation if non-compliant
-if ($null -eq $currentValue -or $currentValue.$ValueName -ne $ValueData) {
-    New-ItemProperty `
-        -Path $RegPath `
-        -Name $ValueName `
-        -PropertyType $ValueType `
-        -Value $ValueData `
-        -Force | Out-Null
-}
-
-# Verification output
-$finalValue = (Get-ItemProperty -Path $RegPath -Name $ValueName).$ValueName
-Write-Output "WN10-SO-000120 compliant. RestrictAnonymous = $finalValue"
+Write-Output "AutoRun behavior set to prevent autorun commands."
 ````
 
 
