@@ -35,6 +35,9 @@ Remiadiated STIG
 ----
 Remiadiated PsISE script
 ----
+
+
+
 # WN10-SO-000120 Remediation
 # Disable anonymous SID/Name translation
 # Windows 10 Enterprise
@@ -65,6 +68,6 @@ if ($null -eq $currentValue -or $currentValue.$ValueName -ne $ValueData) {
 # Verification output
 $finalValue = (Get-ItemProperty -Path $RegPath -Name $ValueName).$ValueName
 Write-Output "WN10-SO-000120 compliant. RestrictAnonymous = $finalValue"
-----
+
 
 
