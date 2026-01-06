@@ -22,42 +22,98 @@ The purpose of STIGs is to reduce vulnerabilities, enforce compliance, and stand
 STIGs are official, prescriptive security baselines for configuring and maintaining secure systems.
 ----
 
-<img width="1334" height="406" alt="image" src="https://github.com/user-attachments/assets/5d70ddf4-984a-4200-aa5e-87f55d8fffdc" />
+<img width="1369" height="353" alt="image" src="https://github.com/user-attachments/assets/e3462089-8b8e-4913-85d7-e5a4d39a4be7" />
+
 
 Unremiadiated STIG
 ----
 
-WN10-CC-000185 - STIG ID - STIG path - \SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\
+WN10-SO-000250 - STIG ID - STIG path - \SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\
 
-<img width="1363" height="397" alt="image" src="https://github.com/user-attachments/assets/805a7f3d-92ee-4d70-a5b7-09434c497f8b" />
+<img width="1206" height="502" alt="image" src="https://github.com/user-attachments/assets/66b15973-023c-4597-897a-b7964950bf91" />
+
 
 Remiadiated STIG
 ----
-Remiadiated PsISE script for WN10-CC-000185 - The default autorun behavior must be configured to prevent autorun commands.
+Remiadiated PsISE script for User Account Control must, at minimum, prompt administrators for consent on the secure desktop.
+STIG ID: WN10-SO-000250
 ----
 
 ```powershell
-
-# Ensure script runs as administrator
-if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)) {
-    Write-Error "Run this script as Administrator."
+# Ensure running as Administrator
+$currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
+$principal = New-Object Security.Principal.WindowsPrincipal($currentUser)
+if (-not $principal.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)) {
+    Write-Error "This script must be run as Administrator. Exiting."
     exit
 }
 
-# Registry path
-$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer"
-$RegName = "NoDriveTypeAutoRun"
-$RegValue = 0xFF  # Disable AutoRun on all drives
+# Define the registry path
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
 
-# Create key if it doesn't exist
-if (-not (Test-Path $RegPath)) {
-    New-Item -Path $RegPath -Force
+# Define all key-value pairs to enforce
+$RegistryValues = @{
+    "ConsentPromptBehaviorAdmin"       = 0x2
+    "ConsentPromptBehaviorUser"        = 0x3
+    "DSCAutomationHostEnabled"         = 0x2
+    "EnableCursorSuppression"          = 0x1
+    "EnableFullTrustStartupTasks"      = 0x2
+    "EnableInstallerDetection"         = 0x1
+    "EnableLUA"                        = 0x1
+    "EnableSecureUIAPaths"             = 0x1
+    "EnableUIADesktopToggle"           = 0x0
+    "EnableUwpStartupTasks"            = 0x2
+    "EnableVirtualization"             = 0x1
+    "PromptOnSecureDesktop"            = 0x1
+    "SupportFullTrustStartupTasks"     = 0x1
+    "SupportUwpStartupTasks"           = 0x1
+    "ValidateAdminCodeSignatures"      = 0x0
+    "dontdisplaylastusername"          = 0x0
+    "legalnoticecaption"                = ""
+    "legalnoticetext"                   = ""
+    "scforceoption"                     = 0x0
+    "shutdownwithoutlogon"              = 0x1
+    "undockwithoutlogon"                = 0x1
 }
 
-# Set the registry value
-Set-ItemProperty -Path $RegPath -Name $RegName -Value $RegValue -Type DWord
+# Ensure registry key exists
+if (-not (Test-Path $RegPath)) {
+    New-Item -Path $RegPath -Force | Out-Null
+}
 
-Write-Output "AutoRun behavior set to prevent autorun commands."
+# Apply each value
+foreach ($Name in $RegistryValues.Keys) {
+    $Value = $RegistryValues[$Name]
+    try {
+        if ($Value -is [int]) {
+            New-ItemProperty -Path $RegPath -Name $Name -Value $Value -PropertyType DWord -Force | Out-Null
+        } else {
+            New-ItemProperty -Path $RegPath -Name $Name -Value $Value -PropertyType String -Force | Out-Null
+        }
+    } catch {
+        Write-Error "Failed to set $Name. $_"
+    }
+}
+
+# Verification
+$Failures = @()
+foreach ($Name in $RegistryValues.Keys) {
+    try {
+        $CurrentValue = (Get-ItemProperty -Path $RegPath -Name $Name).$Name
+        if ($CurrentValue -ne $RegistryValues[$Name]) {
+            $Failures += $Name
+        }
+    } catch {
+        $Failures += $Name
+    }
+}
+
+if ($Failures.Count -eq 0) {
+    Write-Output "SUCCESS: All registry values applied correctly."
+} else {
+    Write-Error "FAILURE: The following keys did not apply: $($Failures -join ', ')"
+}
+
 ````
 
 
