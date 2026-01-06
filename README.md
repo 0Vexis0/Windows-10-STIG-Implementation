@@ -33,3 +33,4 @@ WN10-SO-000120 - STIG Number - STIG path - \SYSTEM\CurrentControlSet\Services\La
 
 Remiadiated STIG
 ----
+https://github.com/0Vexis0/Windows-10-STIG-Implementation/new/main
