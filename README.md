@@ -36,15 +36,6 @@ Remiadiated STIG
 Remiadiated PsISE script for WN10-SO-000120
 ----
 
-
-You need the **PowerShell equivalent**.
-
----
-
-## Correct GitHub Formatting (what you should paste)
-
-Wrap the **entire script** like this in your `README.md`:
-
 ````markdown
 ```powershell
 # WN10-SO-000120 Remediation
