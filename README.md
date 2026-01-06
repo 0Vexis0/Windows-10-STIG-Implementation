@@ -33,11 +33,20 @@ WN10-SO-000120 - STIG Number - STIG path - \SYSTEM\CurrentControlSet\Services\La
 
 Remiadiated STIG
 ----
-Remiadiated PsISE script
+Remiadiated PsISE script for WN10-SO-000120
 ----
 
 
+You need the **PowerShell equivalent**.
 
+---
+
+## Correct GitHub Formatting (what you should paste)
+
+Wrap the **entire script** like this in your `README.md`:
+
+````markdown
+```powershell
 # WN10-SO-000120 Remediation
 # Disable anonymous SID/Name translation
 # Windows 10 Enterprise
@@ -68,6 +77,8 @@ if ($null -eq $currentValue -or $currentValue.$ValueName -ne $ValueData) {
 # Verification output
 $finalValue = (Get-ItemProperty -Path $RegPath -Name $ValueName).$ValueName
 Write-Output "WN10-SO-000120 compliant. RestrictAnonymous = $finalValue"
+````
+
 
 
 
