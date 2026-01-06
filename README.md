@@ -33,4 +33,38 @@ WN10-SO-000120 - STIG Number - STIG path - \SYSTEM\CurrentControlSet\Services\La
 
 Remiadiated STIG
 ----
-https://github.com/0Vexis0/Windows-10-STIG-Implementation/new/main
+Remiadiated PsISE script
+----
+# WN10-SO-000120 Remediation
+# Disable anonymous SID/Name translation
+# Windows 10 Enterprise
+
+$RegPath   = "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa"
+$ValueName = "RestrictAnonymous"
+$ValueData = 1
+$ValueType = "DWord"
+
+# Ensure registry path exists
+if (-not (Test-Path $RegPath)) {
+    New-Item -Path $RegPath -Force | Out-Null
+}
+
+# Retrieve current value
+$currentValue = Get-ItemProperty -Path $RegPath -Name $ValueName -ErrorAction SilentlyContinue
+
+# Apply remediation if non-compliant
+if ($null -eq $currentValue -or $currentValue.$ValueName -ne $ValueData) {
+    New-ItemProperty `
+        -Path $RegPath `
+        -Name $ValueName `
+        -PropertyType $ValueType `
+        -Value $ValueData `
+        -Force | Out-Null
+}
+
+# Verification output
+$finalValue = (Get-ItemProperty -Path $RegPath -Name $ValueName).$ValueName
+Write-Output "WN10-SO-000120 compliant. RestrictAnonymous = $finalValue"
+----
+
+
