@@ -177,4 +177,47 @@ try {
     Write-Error "ERROR: Unable to read registry value. $_"
 }
 ```
+<img width="1339" height="377" alt="image" src="https://github.com/user-attachments/assets/17945366-91de-497e-89b3-fef10539193a" /> 
 
+Unremiadiated STIG
+----
+
+WN10-CC-000030 - STIG ID - STIG path -\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\
+
+
+Remiadiated STIG #3
+----
+```powershell
+# Admin check
+if (-not ([Security.Principal.WindowsPrincipal] `
+    [Security.Principal.WindowsIdentity]::GetCurrent()
+).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)) {
+    Write-Error "Run this script as Administrator."
+    exit
+}
+
+$RegPath  = "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters"
+$RegName  = "EnableICMPRedirect"
+$RegValue = 0
+
+# Ensure key exists
+if (-not (Test-Path $RegPath)) {
+    New-Item -Path $RegPath -Force | Out-Null
+}
+
+# Enforce value
+New-ItemProperty `
+    -Path $RegPath `
+    -Name $RegName `
+    -Value $RegValue `
+    -PropertyType DWord `
+    -Force | Out-Null
+
+# Verify
+$current = (Get-ItemProperty -Path $RegPath -Name $RegName).$RegName
+if ($current -eq $RegValue) {
+    Write-Output "SUCCESS: WN10-CC-000030 (ICMP Redirects disabled) is compliant."
+} else {
+    Write-Error "FAILURE: EnableICMPRedirect is $current"
+}
+```
