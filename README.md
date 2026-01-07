@@ -399,7 +399,7 @@ if ($Failures.Count -gt 0) {
 Unremiadiated STIG
 ----
 
- - STIG ID - STIG path - 
+WN10-CC-000325 - STIG ID - STIG path - \SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\
 
 <img width="1353" height="338" alt="image" src="https://github.com/user-attachments/assets/e7b7933e-e57b-4348-9bea-20316d1eabdf" />
 
@@ -456,7 +456,191 @@ if ($Failures.Count -gt 0) {
 }
 
 ```
+<img width="1377" height="377" alt="image" src="https://github.com/user-attachments/assets/5d74c2ee-6893-4cbb-b66a-77db364e9d9d" />
+
 
 Unremiadiated STIG
 ----
-```powershell
+WN10-CC-000175  WN10-CC-000020 \SOFTWARE\Policies\Microsoft\Windows\AppCompat\
+
+<img width="1356" height="359" alt="image" src="https://github.com/user-attachments/assets/b7f39b87-782d-4813-a5b2-70c0539d7dd4" />
+
+Remiadiated STIG #9
+----
+```powershell WN10-CC-000290 - STIG ID
+# WN10-CC-000175 - Disable Application Compatibility Inventory
+# Expected: DisableInventory = 1
+# Scope: HKLM\SOFTWARE\Policies
+
+$RegPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompat"
+$ValueName = "DisableInventory"
+$ExpectedValue = 1
+$Failures = @()
+
+# --- Admin check ---
+$IsAdmin = ([Security.Principal.WindowsPrincipal] `
+    [Security.Principal.WindowsIdentity]::GetCurrent()
+).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+
+if (-not $IsAdmin) {
+    Write-Error "FAILURE: Script must be run as Administrator."
+    exit 1
+}
+
+# --- Ensure registry path exists ---
+if (-not (Test-Path $RegPath)) {
+    New-Item -Path $RegPath -Force | Out-Null
+}
+
+# --- Set registry value ---
+try {
+    New-ItemProperty `
+        -Path $RegPath `
+        -Name $ValueName `
+        -PropertyType DWord `
+        -Value $ExpectedValue `
+        -Force | Out-Null
+}
+catch {
+    $Failures += $ValueName
+}
+
+# --- Validate ---
+$ActualValue = (Get-ItemProperty -Path $RegPath -Name $ValueName -ErrorAction SilentlyContinue).$ValueName
+
+if ($ActualValue -ne $ExpectedValue) {
+    $Failures += $ValueName
+}
+
+# --- Result ---
+if ($Failures.Count -gt 0) {
+    Write-Error "FAILURE: WN10-CC-000175 did not apply correctly."
+} else {
+    Write-Output "SUCCESS: WN10-CC-000175 (Application Compatibility Inventory disabled) is compliant."
+}
+```
+<img width="1256" height="450" alt="image" src="https://github.com/user-attachments/assets/40705d56-9959-43da-996a-ff833b36eeb0" />
+
+Unremiadiated STIG
+----
+
+WN10-CC-000020 - STIG ID - STIG path - \SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters\
+ 
+<img width="1393" height="435" alt="image" src="https://github.com/user-attachments/assets/e810a12e-140e-4efb-91c5-22fa07d3b9e3" />
+
+Remiadiated STIG #10 
+----
+```powershell  WN10-CC-000020 - STIG ID
+# WN10-CC-000020 - Disable IPv6 Source Routing
+# Expected: DisableIpSourceRouting = 2
+# Requires: Administrator
+
+$RegPath = "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters"
+$ValueName = "DisableIpSourceRouting"
+$ExpectedValue = 2
+$Failures = @()
+
+# --- Admin check ---
+if (-not ([Security.Principal.WindowsPrincipal] `
+    [Security.Principal.WindowsIdentity]::GetCurrent()
+).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Error "FAILURE: Script must be run as Administrator."
+    exit 1
+}
+
+# --- Ensure registry path exists ---
+if (-not (Test-Path $RegPath)) {
+    New-Item -Path $RegPath -Force | Out-Null
+}
+
+# --- Set value ---
+try {
+    New-ItemProperty `
+        -Path $RegPath `
+        -Name $ValueName `
+        -PropertyType DWord `
+        -Value $ExpectedValue `
+        -Force | Out-Null
+}
+catch {
+    $Failures += $ValueName
+}
+
+# --- Validate ---
+$ActualValue = (Get-ItemProperty -Path $RegPath -Name $ValueName -ErrorAction SilentlyContinue).$ValueName
+
+if ($ActualValue -ne $ExpectedValue) {
+    $Failures += $ValueName
+}
+
+# --- Result ---
+if ($Failures.Count -gt 0) {
+    Write-Error "FAILURE: WN10-CC-000020 did not apply correctly."
+} else {
+    Write-Output "SUCCESS: WN10-CC-000020 (IPv6 source routing disabled) is compliant."
+}
+```
+
+# Windows 10 STIG Remediation Summary
+
+## Overview
+This document summarizes the remediation of multiple **Windows 10 DISA STIG vulnerabilities** identified during a compliance scan.  
+
+**Process used:**
+1. Vulnerabilities were first **identified and manually validated** using nessus scan output and registry inspection.
+2. Each finding was then **remediated via direct registry configuration**.
+3. **PowerShell remediation scripts** were created (with ChatGPT assistance) to enforce, standardize, and verify the required STIG settings.
+4. Post-remediation scans confirmed compliance.
+
+This approach demonstrates both **manual hardening knowledge** and **automated remediation capability**.
+
+---
+
+## 🔴 Identified Vulnerabilities (Pre-Remediation)
+
+The following STIGs were initially found **non-compliant** due to missing or misconfigured registry values:
+
+- **WN10-SO-000250** – User Account Control not properly enforced  
+- **WN10-CC-000145** – Power policy setting not configured  
+- **WN10-CC-000030** – ICMP redirects enabled  
+- **WN10-CC-000230** – Microsoft Edge phishing protection override allowed  
+- **WN10-CC-000035** – NetBIOS over TCP/IP enabled  
+- **WN10-CC-000355** – WinRM RunAs behavior not restricted  
+- **WN10-CC-000360** – WinRM Digest authentication allowed  
+- **WN10-CC-000325** – Automatic Restart Sign-On enabled  
+- **WN10-CC-000175** – Application Compatibility Inventory enabled  
+- **WN10-CC-000020** – IPv6 source routing enabled  
+
+Each vulnerability represented a deviation from DISA STIG security baselines and increased system attack surface.
+
+---
+
+## 🟢 Remediation Actions (Post-Remediation)
+
+All vulnerabilities were successfully remediated by enforcing the required registry configurations:
+
+- Registry paths were **validated and created if missing**
+- Required **DWORD values were explicitly set**
+- Scripts enforced **idempotent behavior** (safe to re-run)
+- Each script included **post-write verification logic**
+- Administrator privilege checks ensured safe execution
+
+**Example remediation controls applied:**
+- UAC secure desktop enforcement
+- Network hardening (ICMP, NetBIOS, IPv6 source routing)
+- WinRM authentication restrictions
+- Browser security policy enforcement
+- Power management security controls
+- Application telemetry and inventory suppression
+
+All remediations returned **SUCCESS** and were confirmed compliant by follow-up scans.
+
+---
+
+## Result
+✅ **All identified STIG vulnerabilities were successfully remediated**  
+✅ **System is now compliant with applicable Windows 10 STIG requirements**  
+✅ **Manual validation + automated PowerShell enforcement demonstrated**  
+
+This workflow reflects real-world security operations practices:  
+**detect → validate → remediate → verify**.
