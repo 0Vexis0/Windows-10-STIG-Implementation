@@ -33,7 +33,7 @@ WN10-SO-000250 - STIG ID - STIG path - \SOFTWARE\Microsoft\Windows\CurrentVersio
 <img width="1206" height="502" alt="image" src="https://github.com/user-attachments/assets/66b15973-023c-4597-897a-b7964950bf91" />
 
 
-Remiadiated STIG
+Remiadiated STIG #1
 ----
 Remiadiated PsISE script for User Account Control must, at minimum, prompt administrators for consent on the secure desktop.
 STIG ID: WN10-SO-000250
@@ -117,5 +117,64 @@ if ($Failures.Count -eq 0) {
 ````
 
 
+<img width="1284" height="510" alt="image" src="https://github.com/user-attachments/assets/817ffa5b-9b62-4d89-90dd-2a4391fe3a31" />
 
+Unremiadiated STIG
+----
+
+WN10-CC-000145 - STIG ID - STIG path - \SOFTWARE\Policies\Microsoft\Power\PowerSettings\0e796bdb-100d-47d6-a2d5-f7d2daa51f51\
+
+<img width="1283" height="402" alt="image" src="https://github.com/user-attachments/assets/1f7fb155-5732-4e66-9a92-420b85858dcb" />
+
+
+Remiadiated STIG #2
+----
+
+# Ensure running as Administrator
+```powershell
+# Ensure running as Administrator
+$currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
+$principal = New-Object Security.Principal.WindowsPrincipal($currentUser)
+if (-not $principal.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)) {
+    Write-Error "This script must be run as Administrator. Exiting."
+    exit
+}
+
+# Registry path and value
+$RegPath = "HKLM:\SOFTWARE\Policies\Microsoft\Power\PowerSettings\0e796bdb-100d-47d6-a2d5-f7d2daa51f51"
+$RegName = "DCSettingIndex"
+$RegValue = 1  # Set the desired power setting
+
+# Ensure registry key exists
+if (-not (Test-Path $RegPath)) {
+    try {
+        New-Item -Path $RegPath -Force | Out-Null
+        Write-Output "Registry key created."
+    } catch {
+        Write-Error "Failed to create registry key. $_"
+        exit
+    }
+}
+
+# Apply the setting forcefully
+try {
+    New-ItemProperty -Path $RegPath -Name $RegName -Value $RegValue -PropertyType DWord -Force | Out-Null
+    Write-Output "Registry value set."
+} catch {
+    Write-Error "Failed to set registry value. $_"
+    exit
+}
+
+# Verify the change
+try {
+    $CurrentValue = (Get-ItemProperty -Path $RegPath -Name $RegName).$RegName
+    if ($CurrentValue -eq $RegValue) {
+        Write-Output "SUCCESS: DCSettingIndex is configured correctly for STIG WN10-CC-000145."
+    } else {
+        Write-Error "FAILURE: DCSettingIndex setting did not apply. Current value: $CurrentValue"
+    }
+} catch {
+    Write-Error "ERROR: Unable to read registry value. $_"
+}
+```
 
