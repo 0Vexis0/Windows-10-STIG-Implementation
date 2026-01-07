@@ -39,7 +39,7 @@ Remiadiated PsISE script for User Account Control must, at minimum, prompt admin
 STIG ID: WN10-SO-000250
 ----
 
-```powershell
+```powershell WN10-SO-000250 - STIG ID
 # Ensure running as Administrator
 $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
 $principal = New-Object Security.Principal.WindowsPrincipal($currentUser)
@@ -131,7 +131,7 @@ Remiadiated STIG #2
 ----
 
 # Ensure running as Administrator for all
-```powershell
+```powershell WN10-CC-000145 - STIG ID
 # Ensure running as Administrator
 $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
 $principal = New-Object Security.Principal.WindowsPrincipal($currentUser)
@@ -188,7 +188,7 @@ WN10-CC-000030 - STIG ID - STIG path - \SYSTEM\CurrentControlSet\Services\Tcpip\
 
 Remiadiated STIG #3
 ----
-```powershell
+```powershell WN10-CC-000030 - STIG ID
 # Admin check
 if (-not ([Security.Principal.WindowsPrincipal] `
     [Security.Principal.WindowsIdentity]::GetCurrent()
@@ -233,7 +233,8 @@ WN10-CC-000230 - STIG ID - STIG path - \SOFTWARE\Policies\Microsoft\MicrosoftEdg
 
 Remiadiated STIG #4
 ----
-```powershell
+
+```powershell WN10-CC-000230 - STIG ID
 $RegPath = "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter"
 $ValueName = "PreventOverride"
 $ExpectedValue = 1
@@ -267,8 +268,11 @@ Unremiadiated STIG
 
 WN10-CC-000035 - STIG ID - STIG path - \SYSTEM\CurrentControlSet\Services\Netbt\Parameters\
 
+<img width="1302" height="392" alt="image" src="https://github.com/user-attachments/assets/6a9f5970-9956-4e96-9dff-cc376f6a1325" />
 
-```powershell
+Remiadiated STIG #5
+----
+```powershell WN10-CC-000035 - STIG ID
 $Failures = @()
 
 # Base paths
@@ -311,3 +315,81 @@ if ($Failures.Count -gt 0) {
     Write-Host "SUCCESS: WN10-CC-000035 is compliant."
 }
 ```
+<img width="1384" height="400" alt="image" src="https://github.com/user-attachments/assets/8a6ca91b-1280-4e60-9916-ffdd45e6f67c" /> 
+
+Unremiadiated STIG
+----
+
+WN10-CC-000355 - STIG ID - STIG path - \SOFTWARE\Policies\Microsoft\Windows\WinRM\Service\
+
+<img width="1356" height="370" alt="image" src="https://github.com/user-attachments/assets/56991027-1c9d-4ef8-a1ed-2d5a80663b17" /> 
+
+Remiadiated STIG #6
+----
+```powershell WN10-CC-000355 - STIG ID
+$RegPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WinRM\Service"
+$ValueName = "DisableRunAs"
+$ExpectedValue = 1
+$Failures = @()
+
+# Ensure registry path exists
+if (-not (Test-Path $RegPath)) {
+    New-Item -Path $RegPath -Force | Out-Null
+}
+
+# Set registry value
+Set-ItemProperty -Path $RegPath -Name $ValueName -Value $ExpectedValue -Type DWord -Force
+
+# Validate
+$ActualValue = (Get-ItemProperty -Path $RegPath -Name $ValueName -ErrorAction SilentlyContinue).$ValueName
+if ($ActualValue -ne $ExpectedValue) {
+    $Failures += $ValueName
+}
+
+# Result
+if ($Failures.Count -gt 0) {
+    Write-Error "FAILURE: The following keys did not apply: $($Failures -join ', ')"
+} else {
+    Write-Host "SUCCESS: WN10-CC-000355 is compliant."
+}
+```
+<img width="1372" height="363" alt="image" src="https://github.com/user-attachments/assets/c95dbcef-3642-4b7c-90da-ab8f1ed3cf5a" />
+
+
+Unremiadiated STIG
+
+WN10-CC-000360 - STIG ID - STIG path - \SOFTWARE\Policies\Microsoft\Windows\WinRM\Client\
+
+<img width="1298" height="420" alt="image" src="https://github.com/user-attachments/assets/7daa8168-ee10-4d90-b19f-464c77ad1891" />
+
+
+Remiadiated STIG #7
+```powershell WN10-CC-000360 - STIG ID
+$RegPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WinRM\Client"
+$ValueName = "AllowDigest"
+$ExpectedValue = 0
+$Failures = @()
+
+# Ensure registry path exists
+if (-not (Test-Path $RegPath)) {
+    New-Item -Path $RegPath -Force | Out-Null
+}
+
+# Set registry value
+Set-ItemProperty -Path $RegPath -Name $ValueName -Value $ExpectedValue -Type DWord -Force
+
+# Validate
+$ActualValue = (Get-ItemProperty -Path $RegPath -Name $ValueName -ErrorAction SilentlyContinue).$ValueName
+if ($ActualValue -ne $ExpectedValue) {
+    $Failures += $ValueName
+}
+
+# Result
+if ($Failures.Count -gt 0) {
+    Write-Error "FAILURE: The following keys did not apply: $($Failures -join ', ')"
+} else {
+    Write-Host "SUCCESS: WN10-CC-000360 is compliant."
+}
+```
+
+Unremiadiated STIG
