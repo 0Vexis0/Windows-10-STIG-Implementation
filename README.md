@@ -130,7 +130,7 @@ WN10-CC-000145 - STIG ID - STIG path - \SOFTWARE\Policies\Microsoft\Power\PowerS
 Remiadiated STIG #2
 ----
 
-# Ensure running as Administrator
+# Ensure running as Administrator for all
 ```powershell
 # Ensure running as Administrator
 $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
@@ -184,6 +184,7 @@ Unremiadiated STIG
 
 WN10-CC-000030 - STIG ID - STIG path -\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\
 
+<img width="1319" height="482" alt="image" src="https://github.com/user-attachments/assets/c33184f1-abfc-40f5-add2-8b980e3762fd" />
 
 Remiadiated STIG #3
 ----
