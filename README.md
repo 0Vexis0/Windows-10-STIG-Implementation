@@ -357,6 +357,7 @@ if ($Failures.Count -gt 0) {
 
 
 Unremiadiated STIG
+----
 
 WN10-CC-000360 - STIG ID - STIG path - \SOFTWARE\Policies\Microsoft\Windows\WinRM\Client\
 
@@ -392,40 +393,70 @@ if ($Failures.Count -gt 0) {
     Write-Host "SUCCESS: WN10-CC-000360 is compliant."
 }
 ```
-<img width="1240" height="424" alt="image" src="https://github.com/user-attachments/assets/946891bc-892d-4491-8672-e291abe26bbb" />
+<img width="1375" height="388" alt="image" src="https://github.com/user-attachments/assets/7d82c83d-c941-4c03-a574-3852e9fd1382" />
+
 
 Unremiadiated STIG
+----
 
-WN10-CC-000310 - STIG ID - STIG path - \SOFTWARE\Policies\Microsoft\Windows\Installer\
+ - STIG ID - STIG path - 
 
+<img width="1353" height="338" alt="image" src="https://github.com/user-attachments/assets/e7b7933e-e57b-4348-9bea-20316d1eabdf" />
 
 
 Remiadiated STIG #8
 ----
-```powershell WN10-CC-000360 - STIG ID
-$RegPath = "HKLM:\SOFTWARE\Policies\Microsoft\Installer"
-$ValueName = "EnableUserControl"
-$ExpectedValue = 0
+```powershell WN10-CC-000325 - STIG ID
+# WN10-CC-000325 - Disable Automatic Restart Sign-On
+# Requires: Administrator
+
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
+$ValueName = "DisableAutomaticRestartSignON"
+$ExpectedValue = 1
 $Failures = @()
 
-# Ensure registry path exists
+# --- Admin check ---
+if (-not ([Security.Principal.WindowsPrincipal] `
+    [Security.Principal.WindowsIdentity]::GetCurrent()
+    ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Error "FAILURE: Script must be run as Administrator."
+    exit 1
+}
+
+# --- Ensure registry path exists ---
 if (-not (Test-Path $RegPath)) {
     New-Item -Path $RegPath -Force | Out-Null
 }
 
-# Set registry value
-Set-ItemProperty -Path $RegPath -Name $ValueName -Value $ExpectedValue -Type DWord -Force
+# --- Set registry value ---
+try {
+    New-ItemProperty `
+        -Path $RegPath `
+        -Name $ValueName `
+        -PropertyType DWord `
+        -Value $ExpectedValue `
+        -Force | Out-Null
+}
+catch {
+    $Failures += $ValueName
+}
 
-# Validate
+# --- Validate ---
 $ActualValue = (Get-ItemProperty -Path $RegPath -Name $ValueName -ErrorAction SilentlyContinue).$ValueName
+
 if ($ActualValue -ne $ExpectedValue) {
     $Failures += $ValueName
 }
 
-# Result
+# --- Result ---
 if ($Failures.Count -gt 0) {
-    Write-Error "FAILURE: The following keys did not apply: $($Failures -join ', ')"
+    Write-Error "FAILURE: The following registry values did not apply correctly: $($Failures -join ', ')"
 } else {
-    Write-Host "SUCCESS: WN10-CC-000310 is compliant."
+    Write-Output "SUCCESS: WN10-CC-000325 (Automatic Restart Sign-On disabled) is compliant."
 }
+
 ```
+
+Unremiadiated STIG
+----
+```powershell
