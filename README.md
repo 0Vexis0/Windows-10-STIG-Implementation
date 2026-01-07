@@ -364,6 +364,7 @@ WN10-CC-000360 - STIG ID - STIG path - \SOFTWARE\Policies\Microsoft\Windows\WinR
 
 
 Remiadiated STIG #7
+----
 ```powershell WN10-CC-000360 - STIG ID
 $RegPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WinRM\Client"
 $ValueName = "AllowDigest"
@@ -391,5 +392,40 @@ if ($Failures.Count -gt 0) {
     Write-Host "SUCCESS: WN10-CC-000360 is compliant."
 }
 ```
+<img width="1240" height="424" alt="image" src="https://github.com/user-attachments/assets/946891bc-892d-4491-8672-e291abe26bbb" />
 
 Unremiadiated STIG
+
+WN10-CC-000310 - STIG ID - STIG path - \SOFTWARE\Policies\Microsoft\Windows\Installer\
+
+
+
+Remiadiated STIG #8
+----
+```powershell WN10-CC-000360 - STIG ID
+$RegPath = "HKLM:\SOFTWARE\Policies\Microsoft\Installer"
+$ValueName = "EnableUserControl"
+$ExpectedValue = 0
+$Failures = @()
+
+# Ensure registry path exists
+if (-not (Test-Path $RegPath)) {
+    New-Item -Path $RegPath -Force | Out-Null
+}
+
+# Set registry value
+Set-ItemProperty -Path $RegPath -Name $ValueName -Value $ExpectedValue -Type DWord -Force
+
+# Validate
+$ActualValue = (Get-ItemProperty -Path $RegPath -Name $ValueName -ErrorAction SilentlyContinue).$ValueName
+if ($ActualValue -ne $ExpectedValue) {
+    $Failures += $ValueName
+}
+
+# Result
+if ($Failures.Count -gt 0) {
+    Write-Error "FAILURE: The following keys did not apply: $($Failures -join ', ')"
+} else {
+    Write-Host "SUCCESS: WN10-CC-000310 is compliant."
+}
+```
