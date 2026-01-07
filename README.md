@@ -25,7 +25,7 @@ STIGs are official, prescriptive security baselines for configuring and maintain
 <img width="1369" height="353" alt="image" src="https://github.com/user-attachments/assets/e3462089-8b8e-4913-85d7-e5a4d39a4be7" />
 
 
-Unremiadiated STIG
+non-remediated STIG
 ----
 
 WN10-SO-000250 - STIG ID - STIG path - \SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\
@@ -33,12 +33,8 @@ WN10-SO-000250 - STIG ID - STIG path - \SOFTWARE\Microsoft\Windows\CurrentVersio
 <img width="1206" height="502" alt="image" src="https://github.com/user-attachments/assets/66b15973-023c-4597-897a-b7964950bf91" />
 
 
-Remiadiated STIG #1
+Remediated STIG #1
 ----
-Remiadiated PsISE script for User Account Control must, at minimum, prompt administrators for consent on the secure desktop.
-STIG ID: WN10-SO-000250
-----
-
 ```powershell WN10-SO-000250 - STIG ID
 # Ensure running as Administrator
 $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
@@ -119,7 +115,7 @@ if ($Failures.Count -eq 0) {
 
 <img width="1284" height="510" alt="image" src="https://github.com/user-attachments/assets/817ffa5b-9b62-4d89-90dd-2a4391fe3a31" />
 
-Unremiadiated STIG
+non-remediated STIG
 ----
 
 WN10-CC-000145 - STIG ID - STIG path - \SOFTWARE\Policies\Microsoft\Power\PowerSettings\0e796bdb-100d-47d6-a2d5-f7d2daa51f51\
@@ -127,7 +123,7 @@ WN10-CC-000145 - STIG ID - STIG path - \SOFTWARE\Policies\Microsoft\Power\PowerS
 <img width="1283" height="402" alt="image" src="https://github.com/user-attachments/assets/1f7fb155-5732-4e66-9a92-420b85858dcb" />
 
 
-Remiadiated STIG #2
+Remediated STIG #2
 ----
 
 # Ensure running as Administrator for all
@@ -179,14 +175,14 @@ try {
 ```
 <img width="1339" height="377" alt="image" src="https://github.com/user-attachments/assets/17945366-91de-497e-89b3-fef10539193a" /> 
 
-Unremiadiated STIG
+non-remediated STIG
 ----
 
 WN10-CC-000030 - STIG ID - STIG path - \SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\
 
 <img width="1319" height="482" alt="image" src="https://github.com/user-attachments/assets/c33184f1-abfc-40f5-add2-8b980e3762fd" />
 
-Remiadiated STIG #3
+Remediated STIG #3
 ----
 ```powershell WN10-CC-000030 - STIG ID
 # Admin check
@@ -224,14 +220,14 @@ if ($current -eq $RegValue) {
 ```
 <img width="1350" height="394" alt="image" src="https://github.com/user-attachments/assets/b7ba5bf1-2bf0-4ddd-9a57-f0d36a51ad1c" /> 
 
-Unremiadiated STIG
+non-remediated STIG
 ----
 
 WN10-CC-000230 - STIG ID - STIG path - \SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter\ 
 
 <img width="1335" height="367" alt="image" src="https://github.com/user-attachments/assets/ae2814f9-a194-4ea4-8773-8ce43fe152d7" />
 
-Remiadiated STIG #4
+Remediated STIG #4
 ----
 
 ```powershell WN10-CC-000230 - STIG ID
@@ -263,14 +259,14 @@ if ($Failures.Count -gt 0) {
 ```
 <img width="1364" height="370" alt="image" src="https://github.com/user-attachments/assets/e7c2521d-6e9c-4067-b0dd-d3dabc23ae03" />
 
-Unremiadiated STIG
+non-remediated STIG
 ----
 
 WN10-CC-000035 - STIG ID - STIG path - \SYSTEM\CurrentControlSet\Services\Netbt\Parameters\
 
 <img width="1302" height="392" alt="image" src="https://github.com/user-attachments/assets/6a9f5970-9956-4e96-9dff-cc376f6a1325" />
 
-Remiadiated STIG #5
+Remediated STIG #5
 ----
 ```powershell WN10-CC-000035 - STIG ID
 $Failures = @()
@@ -317,14 +313,14 @@ if ($Failures.Count -gt 0) {
 ```
 <img width="1384" height="400" alt="image" src="https://github.com/user-attachments/assets/8a6ca91b-1280-4e60-9916-ffdd45e6f67c" /> 
 
-Unremiadiated STIG
+non-remediated STIG
 ----
 
 WN10-CC-000355 - STIG ID - STIG path - \SOFTWARE\Policies\Microsoft\Windows\WinRM\Service\
 
 <img width="1356" height="370" alt="image" src="https://github.com/user-attachments/assets/56991027-1c9d-4ef8-a1ed-2d5a80663b17" /> 
 
-Remiadiated STIG #6
+Remediated STIG #6
 ----
 ```powershell WN10-CC-000355 - STIG ID
 $RegPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WinRM\Service"
@@ -356,7 +352,7 @@ if ($Failures.Count -gt 0) {
 <img width="1372" height="363" alt="image" src="https://github.com/user-attachments/assets/c95dbcef-3642-4b7c-90da-ab8f1ed3cf5a" />
 
 
-Unremiadiated STIG
+non-remediated STIG
 ----
 
 WN10-CC-000360 - STIG ID - STIG path - \SOFTWARE\Policies\Microsoft\Windows\WinRM\Client\
@@ -364,7 +360,7 @@ WN10-CC-000360 - STIG ID - STIG path - \SOFTWARE\Policies\Microsoft\Windows\WinR
 <img width="1298" height="420" alt="image" src="https://github.com/user-attachments/assets/7daa8168-ee10-4d90-b19f-464c77ad1891" />
 
 
-Remiadiated STIG #7
+Remediated STIG #7
 ----
 ```powershell WN10-CC-000360 - STIG ID
 $RegPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WinRM\Client"
@@ -396,7 +392,7 @@ if ($Failures.Count -gt 0) {
 <img width="1375" height="388" alt="image" src="https://github.com/user-attachments/assets/7d82c83d-c941-4c03-a574-3852e9fd1382" />
 
 
-Unremiadiated STIG
+non-remediated STIG
 ----
 
 WN10-CC-000325 - STIG ID - STIG path - \SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\
@@ -404,7 +400,7 @@ WN10-CC-000325 - STIG ID - STIG path - \SOFTWARE\Microsoft\Windows\CurrentVersio
 <img width="1353" height="338" alt="image" src="https://github.com/user-attachments/assets/e7b7933e-e57b-4348-9bea-20316d1eabdf" />
 
 
-Remiadiated STIG #8
+Remediated STIG #8
 ----
 ```powershell WN10-CC-000325 - STIG ID
 # WN10-CC-000325 - Disable Automatic Restart Sign-On
@@ -459,13 +455,13 @@ if ($Failures.Count -gt 0) {
 <img width="1377" height="377" alt="image" src="https://github.com/user-attachments/assets/5d74c2ee-6893-4cbb-b66a-77db364e9d9d" />
 
 
-Unremiadiated STIG
+non-remediated STIG
 ----
 WN10-CC-000175  WN10-CC-000020 \SOFTWARE\Policies\Microsoft\Windows\AppCompat\
 
 <img width="1356" height="359" alt="image" src="https://github.com/user-attachments/assets/b7f39b87-782d-4813-a5b2-70c0539d7dd4" />
 
-Remiadiated STIG #9
+Remediated STIG #9
 ----
 ```powershell WN10-CC-000290 - STIG ID
 # WN10-CC-000175 - Disable Application Compatibility Inventory
@@ -521,14 +517,14 @@ if ($Failures.Count -gt 0) {
 ```
 <img width="1256" height="450" alt="image" src="https://github.com/user-attachments/assets/40705d56-9959-43da-996a-ff833b36eeb0" />
 
-Unremiadiated STIG
+non-remediated STIG
 ----
 
 WN10-CC-000020 - STIG ID - STIG path - \SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters\
  
 <img width="1393" height="435" alt="image" src="https://github.com/user-attachments/assets/e810a12e-140e-4efb-91c5-22fa07d3b9e3" />
 
-Remiadiated STIG #10 
+Remediated STIG #10 
 ----
 ```powershell  WN10-CC-000020 - STIG ID
 # WN10-CC-000020 - Disable IPv6 Source Routing
