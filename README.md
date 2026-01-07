@@ -182,7 +182,7 @@ try {
 Unremiadiated STIG
 ----
 
-WN10-CC-000030 - STIG ID - STIG path -\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\
+WN10-CC-000030 - STIG ID - STIG path - \SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\
 
 <img width="1319" height="482" alt="image" src="https://github.com/user-attachments/assets/c33184f1-abfc-40f5-add2-8b980e3762fd" />
 
@@ -220,5 +220,94 @@ if ($current -eq $RegValue) {
     Write-Output "SUCCESS: WN10-CC-000030 (ICMP Redirects disabled) is compliant."
 } else {
     Write-Error "FAILURE: EnableICMPRedirect is $current"
+}
+```
+<img width="1350" height="394" alt="image" src="https://github.com/user-attachments/assets/b7ba5bf1-2bf0-4ddd-9a57-f0d36a51ad1c" /> 
+
+Unremiadiated STIG
+----
+
+WN10-CC-000230 - STIG ID - STIG path - \SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter\ 
+
+<img width="1335" height="367" alt="image" src="https://github.com/user-attachments/assets/ae2814f9-a194-4ea4-8773-8ce43fe152d7" />
+
+Remiadiated STIG #4
+----
+```powershell
+$RegPath = "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter"
+$ValueName = "PreventOverride"
+$ExpectedValue = 1
+$Failures = @()
+
+# Ensure registry path exists
+if (-not (Test-Path $RegPath)) {
+    New-Item -Path $RegPath -Force | Out-Null
+}
+
+# Set registry value
+Set-ItemProperty -Path $RegPath -Name $ValueName -Value $ExpectedValue -Type DWord -Force
+
+# Validate
+$ActualValue = (Get-ItemProperty -Path $RegPath -Name $ValueName -ErrorAction SilentlyContinue).$ValueName
+
+if ($ActualValue -ne $ExpectedValue) {
+    $Failures += "$ValueName"
+}
+
+if ($Failures.Count -gt 0) {
+    Write-Error "FAILURE: The following keys did not apply: $($Failures -join ', ')"
+} else {
+    Write-Host "SUCCESS: WN10-CC-000230 is compliant."
+}
+```
+<img width="1364" height="370" alt="image" src="https://github.com/user-attachments/assets/e7c2521d-6e9c-4067-b0dd-d3dabc23ae03" />
+
+Unremiadiated STIG
+----
+
+WN10-CC-000035 - STIG ID - STIG path - \SYSTEM\CurrentControlSet\Services\Netbt\Parameters\
+
+
+```powershell
+$Failures = @()
+
+# Base paths
+$NetBTBase = "HKLM:\SYSTEM\CurrentControlSet\Services\NetBT\Parameters"
+$InterfacesBase = "$NetBTBase\Interfaces"
+
+# 1. Enforce NoNameReleaseOnDemand
+$GlobalValue = "NoNameReleaseOnDemand"
+$GlobalExpected = 1
+
+Set-ItemProperty -Path $NetBTBase -Name $GlobalValue -Value $GlobalExpected -Type DWord -Force
+
+$ActualGlobal = (Get-ItemProperty -Path $NetBTBase -Name $GlobalValue -ErrorAction SilentlyContinue).$GlobalValue
+if ($ActualGlobal -ne $GlobalExpected) {
+    $Failures += "NoNameReleaseOnDemand"
+}
+
+# 2. Enforce NetbiosOptions on all Tcpip_* interfaces
+$Interfaces = Get-ChildItem -Path $InterfacesBase | Where-Object {
+    $_.PSChildName -like "Tcpip_*"
+}
+
+foreach ($Interface in $Interfaces) {
+    $RegPath = $Interface.PSPath
+    $ValueName = "NetbiosOptions"
+    $ExpectedValue = 2
+
+    Set-ItemProperty -Path $RegPath -Name $ValueName -Value $ExpectedValue -Type DWord -Force
+
+    $ActualValue = (Get-ItemProperty -Path $RegPath -Name $ValueName -ErrorAction SilentlyContinue).$ValueName
+    if ($ActualValue -ne $ExpectedValue) {
+        $Failures += $Interface.PSChildName
+    }
+}
+
+# 3. Result
+if ($Failures.Count -gt 0) {
+    Write-Error "FAILURE: The following settings did not apply: $($Failures -join ', ')"
+} else {
+    Write-Host "SUCCESS: WN10-CC-000035 is compliant."
 }
 ```
